@@ -1,0 +1,30 @@
+@inject HttpClient HttpClient
+
+<div class="card text-center m-3">
+    <h5 class="card-header">POST Request with Error Handling</h5>
+    <div class="card-body">
+        Error: @errorMessage
+    </div>
+</div>
+
+@code {
+    private Article article;
+    private string errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var postBody = new { Title = "Blazor POST Request Example" };
+        using var response = await HttpClient.PostAsJsonAsync("https://reqres.in/invalid-url", postBody);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            // set error message for display, log to console and return
+            errorMessage = response.ReasonPhrase;
+            Console.WriteLine($"There was an error! {errorMessage}");
+            return;
+        }
+
+        // convert response data to Article object
+        article = await response.Content.ReadFromJsonAsync<Article>();
+    }
+}

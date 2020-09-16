@@ -1,0 +1,21 @@
+@inject HttpClient HttpClient
+
+<div class="card text-center m-3">
+    <h5 class="card-header">Simple POST Request</h5>
+    <div class="card-body">
+        Returned Id: @article?.Id
+    </div>
+</div>
+
+@code {
+    private Article article;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var postBody = new { Title = "Blazor POST Request Example" };
+        using var response = await HttpClient.PostAsJsonAsync("https://reqres.in/api/articles", postBody);
+
+        // convert response data to Article object
+        article = await response.Content.ReadFromJsonAsync<Article>();
+    }
+}

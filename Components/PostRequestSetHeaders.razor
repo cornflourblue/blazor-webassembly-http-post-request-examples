@@ -1,0 +1,34 @@
+@inject HttpClient HttpClient
+
+<div class="card text-center m-3">
+    <h5 class="card-header">POST request with headers set</h5>
+    <div class="card-body">
+        Returned Id: @article?.Id
+    </div>
+</div>
+
+@code {
+    private Article article;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // create request object
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://reqres.in/api/articles");
+
+        // set request body
+        var postBody = new { Title = "Blazor POST Request Example" };
+        request.Content = new StringContent(JsonSerializer.Serialize(postBody), Encoding.UTF8, "application/json");
+
+        // add authorization header
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "my-token");
+
+        // add custom http header
+        request.Headers.Add("My-Custom-Header", "foobar");
+
+        // send request
+        using var response = await HttpClient.SendAsync(request);
+
+        // convert response data to Article object
+        article = await response.Content.ReadFromJsonAsync<Article>();
+    }
+}

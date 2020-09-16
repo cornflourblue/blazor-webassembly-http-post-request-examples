@@ -1,0 +1,24 @@
+@inject HttpClient HttpClient
+
+<div class="card text-center m-3">
+    <h5 class="card-header">POST Request with dynamic response type</h5>
+    <div class="card-body">
+        Returned Id: @articleId
+    </div>
+</div>
+
+@code {
+    private string articleId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var postBody = new { Title = "Blazor POST Request Example" };
+        using var response = await HttpClient.PostAsJsonAsync("https://reqres.in/api/articles", postBody);
+
+        // convert response data to JsonElement which can handle any JSON data
+        var data = await response.Content.ReadFromJsonAsync<JsonElement>();
+
+        // get id property from JSON response data
+        articleId = data.GetProperty("id").GetString();
+    }
+}
